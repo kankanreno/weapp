@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"crypto/tls"
+	"time"
 
 	"github.com/medivhzhan/weapp/util"
 )
@@ -78,11 +80,12 @@ func Login(appID, secret, code string) (lres LoginResponse, err error) {
 		return
 	}
 
-	res, err := http.Get(api)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
+	//res, err := http.Get(api)
+	//if err != nil {
+	//	return
+	//}
+	//defer res.Body.Close()
+	res := get(api, nil)
 
 	if res.StatusCode != 200 {
 		err = errors.New(WeChatServerError)
@@ -102,6 +105,33 @@ func Login(appID, secret, code string) (lres LoginResponse, err error) {
 
 	lres = data.LoginResponse
 	return
+}
+
+func get(url string, headers map[string]string) *http.Response {
+	tr := &http.Transport{    //解决x509: certificate signed by unknown authority
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{
+		Timeout:   15 * time.Second,
+		Transport: tr,    //解决x509: certificate signed by unknown authority
+	}
+	req, err := http.NewRequest("GET", url, nil)
+
+	for k, v := range headers {
+		req.Header.Add(k, v)
+	}
+
+	if err != nil {
+		//log.Println(err.Error())
+		return nil
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		//log.Println(err.Error())
+		return nil
+	}
+	return resp
 }
 
 type watermark struct {
