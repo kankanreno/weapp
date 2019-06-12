@@ -1,1 +1,3 @@
-module github.com/medivhzhan/weapp
+module github.com/kankanreno/weapp
+
+go 1.12

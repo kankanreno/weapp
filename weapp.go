@@ -8,7 +8,7 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/medivhzhan/weapp/util"
+	"github.com/kankanreno/weapp/util"
 )
 
 const (
