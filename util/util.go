@@ -58,7 +58,14 @@ func PostXML(uri string, obj interface{}) ([]byte, error) {
 	}
 
 	body := bytes.NewBuffer(data)
-	res, err := http.Post(uri, "application/xml; charset=utf-8", body)
+	client := http.Client{
+		Transport:&http.Transport{
+			TLSClientConfig:&tls.Config{
+				InsecureSkipVerify:true,
+			},
+		},
+	}
+	res, err := client.Post(uri, "application/xml; charset=utf-8", body)
 	if err != nil {
 		return nil, err
 	}
